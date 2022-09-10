@@ -1,42 +1,43 @@
-/*
- * Project StorageHelper-Demo-FRAM
- * Description: Implementation of the StorageHelper Library using FRAM
- * Author: Chip McClelland - based on examples by Rick
- * Date: July 20th 2022
- */
-
-
+// This must be included before StorageHelperRK.h!MyPersistentData
+#include "MB85RC256V-FRAM-RK.h"
+#include "StorageHelperRK.h"
 #include "MyPersistentData.h"
 
-SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
 SYSTEM_THREAD(ENABLED);
-SYSTEM_MODE(MANUAL);
+SYSTEM_MODE(SEMI_AUTOMATIC);
+
+SerialLogHandler logHandler(LOG_LEVEL_TRACE);
+
+MB85RC256V fram1(Wire, 0);
 
 void setup() {
-  sysStatusData::instance().setup();
+    // Optional: Enable to make it easier to see debug USB serial messages at startup
+    waitFor(Serial.isConnected, 10000);
+    delay(2000);
+
+    data.setup();
+	Particle.connect();
+
 }
 
 void loop() {
-  static unsigned long lastCheck = 0;
+
+    static unsigned long lastCheck = 0;
     if (millis() - lastCheck >= 10000) {
         lastCheck = millis();
 
-        sysStatus.load();
+        data.load();
 
-        sysStatus.logData("After loading");
+        data.logData("after loading");
 
-        sysStatus.setValue_test1(sysStatus.getValue_test1() + 1);
-        sysStatus.setValue_test2(!sysStatus.getValue_test2());
-        sysStatus.setValue_test3(sysStatus.getValue_test3() - 0.1);
-        sysStatus.setValue_test4("testing sysStaus!"); 
+        data.setValue_test1(data.getValue_test1() + 1);
+        data.setValue_test2(!data.getValue_test2());
+        data.setValue_test3(data.getValue_test3() - 0.1);
+        data.setValue_test4("testing!"); 
 
-        sysStatus.logData("After update");
+        data.logData("after update");
 
-        sysStatus.flush(true);
+        data.flush(true);
     }  
-    sysStatusData::instance().loop();
 }
-
-
-
