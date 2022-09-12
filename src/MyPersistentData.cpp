@@ -1,4 +1,7 @@
+#include "Particle.h"
 #include "MyPersistentData.h"
+
+MB85RC256V fram(Wire, 0);
 
 MyPersistentData *MyPersistentData::_instance;
 
@@ -10,18 +13,19 @@ MyPersistentData &MyPersistentData::instance() {
     return *_instance;
 }
 
-MyPersistentData::MyPersistentData() : StorageHelperRK::PersistentDataFRAM(fram1, 0, &myData.header, sizeof(MyData), DATA_MAGIC, DATA_VERSION) {
+MyPersistentData::MyPersistentData() : StorageHelperRK::PersistentDataFRAM(::fram, 0, &myData.header, sizeof(MyData), DATA_MAGIC, DATA_VERSION) {
 };
 
 MyPersistentData::~MyPersistentData() {
 }
 
 void MyPersistentData::setup() {
-    fram1.begin();
+    fram.begin();
+    data.load();
 }
 
 void MyPersistentData::loop() {
-    // Put your code to run during the application thread loop here
+    data.flush(false);
 }
 
 int MyPersistentData::getValue_test1() const 

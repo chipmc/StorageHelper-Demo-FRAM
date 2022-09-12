@@ -1,24 +1,16 @@
-// This must be included before StorageHelperRK.h!MyPersistentData
-#include "MB85RC256V-FRAM-RK.h"
-#include "StorageHelperRK.h"
+#include "Particle.h"
 #include "MyPersistentData.h"
-
+#include "Another_Module.h"
 
 SYSTEM_THREAD(ENABLED);
-SYSTEM_MODE(SEMI_AUTOMATIC);
+SYSTEM_MODE(MANUAL);
 
 SerialLogHandler logHandler(LOG_LEVEL_TRACE);
-
-MB85RC256V fram1(Wire, 0);
 
 void setup() {
     // Optional: Enable to make it easier to see debug USB serial messages at startup
     waitFor(Serial.isConnected, 10000);
-    delay(2000);
-
     data.setup();
-	Particle.connect();
-
 }
 
 void loop() {
@@ -27,7 +19,6 @@ void loop() {
     if (millis() - lastCheck >= 10000) {
         lastCheck = millis();
 
-        data.load();
 
         data.logData("after loading");
 
@@ -38,6 +29,9 @@ void loop() {
 
         data.logData("after update");
 
-        data.flush(true);
+        testStorageAccess();
+
     }  
+
+    data.loop();
 }
